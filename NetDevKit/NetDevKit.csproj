@@ -5,11 +5,32 @@
         <TargetFramework>net472</TargetFramework>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
+
+        <!--
+        It is important to specify the breaking change version in the assembly name,
+        contrarily to the common practice as we don't have a hand on binding redirects.
+        This will allow different mods to use totally different versions of the same
+        library, without causing conflicts.
+        -->
+        <AssemblyName>UrbanDevKitV1</AssemblyName>
+        <Version>1.0.0</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+        <!-- NuGet package properties -->
+        <!-- https://github.com/NuGet/docs.microsoft.com-nuget/blob/main/docs/reference/msbuild-targets.md -->
+        <PackageId>CitiesSkylinesModding.UrbanDevKit</PackageId>
+        <Authors>Morgan Touverey Quilling (@toverux)</Authors>
+        <Company>Cities: Skylines Modding Community</Company>
+        <Description>A set of high-quality .NET utilities to ease development of Cities: Skylines II mods.</Description>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>https://discord.gg/tFE2kKHbFz</PackageProjectUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/CitiesSkylinesModding/UrbanDevKit</RepositoryUrl>
     </PropertyGroup>
 
     <!--Imports must be after PropertyGroup block-->
     <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props"/>
-    <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets"/>
 
     <ItemGroup>
         <Reference Include="Game">
@@ -64,15 +85,18 @@
 
     <ItemGroup>
         <None Include="$(ModPropsFile)" Link="Properties\Mod.props"/>
-        <None Include="$(ModTargetsFile)" Link="Properties\Mod.targets"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NetDevKit\NetDevKit.csproj"/>
-        <!--
-        To test the NuGet build (notably to test different versions of UrbanDevKit),
-        uncomment the following line and comment the ProjectReference above.
-        <PackageReference Include="CitiesSkylinesModding.UrbanDevKit" Version="1.0.0"/>
-        -->
+        <None Include="$(SolutionDir)\icon.png" Pack="true" PackagePath=""/>
+        <None Include="$(SolutionDir)\README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
+
+    <!--
+    If you wish to test deploying and installing the NuGet package locally, uncomment this temporarily.
+    It will put the package in .localnuget which is configured as a source in NuGet.config.
+    -->
+    <Target Name="CopyPackage" AfterTargets="Pack">
+        <Exec Command="nuget add &quot;$(ProjectDir)$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg&quot; -Source &quot;$(SolutionDir)/.localnuget&quot;"/>
+    </Target>
 </Project>

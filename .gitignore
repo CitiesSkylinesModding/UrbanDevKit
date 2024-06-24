@@ -1,5 +1,8 @@
+# Non-commitable editor files
+.vs
+
+# Build artifacts
+Library/
 bin/
 obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+/.localnuget

@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModOne", "TestModOne\TestModOne.csproj", "{A70850CB-1A47-411A-9F4D-8B20124B8FF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModTwo", "TestModTwo\TestModTwo.csproj", "{DD29236C-CF4B-4C38-86D2-25DDBEBF9627}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDevKit", "NetDevKit\NetDevKit.csproj", "{5E5BED41-37CA-4D72-9BB0-0A30591E98C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{A70850CB-1A47-411A-9F4D-8B20124B8FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A70850CB-1A47-411A-9F4D-8B20124B8FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A70850CB-1A47-411A-9F4D-8B20124B8FF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD29236C-CF4B-4C38-86D2-25DDBEBF9627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD29236C-CF4B-4C38-86D2-25DDBEBF9627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD29236C-CF4B-4C38-86D2-25DDBEBF9627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD29236C-CF4B-4C38-86D2-25DDBEBF9627}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E5BED41-37CA-4D72-9BB0-0A30591E98C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E5BED41-37CA-4D72-9BB0-0A30591E98C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E5BED41-37CA-4D72-9BB0-0A30591E98C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E5BED41-37CA-4D72-9BB0-0A30591E98C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

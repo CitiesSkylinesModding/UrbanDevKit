@@ -5,12 +5,12 @@ using Game.Modding;
 using Game.SceneFlow;
 using JetBrains.Annotations;
 
-namespace TestModOne;
+namespace TestModTwo;
 
 [UsedImplicitly]
 public sealed class Mod : IMod {
     public static readonly ILog Log = LogManager
-        .GetLogger(nameof(TestModOne))
+        .GetLogger(nameof(TestModTwo))
         .SetShowsErrorsInUI(true);
 
     private Setting? setting;
@@ -27,7 +27,7 @@ public sealed class Mod : IMod {
 
         GameManager.instance.localizationManager.AddSource("en-US", new LocaleEn(this.setting));
 
-        AssetDatabase.global.LoadSettings(nameof(TestModOne), this.setting, new Setting(this));
+        AssetDatabase.global.LoadSettings(nameof(TestModTwo), this.setting, new Setting(this));
     }
 
     public void OnDispose() {
