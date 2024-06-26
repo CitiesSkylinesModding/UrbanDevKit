@@ -75,4 +75,8 @@
         <PackageReference Include="CitiesSkylinesModding.UrbanDevKit" Version="1.0.0"/>
         -->
     </ItemGroup>
+
+    <Target Name="BuildUI" AfterTargets="AfterBuild">
+        <Exec Command="bun run build:testmodone" WorkingDirectory="$(SolutionDir)"/>
+    </Target>
 </Project>

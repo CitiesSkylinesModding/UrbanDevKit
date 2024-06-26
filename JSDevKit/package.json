@@ -1,0 +1,29 @@
+{
+  "name": "@csmodding/urbandevkit",
+  "version": "0.1.0",
+  "license": "APACHE-2.0",
+  "homepage": "https://discord.gg/SsshDVq2Zj",
+  "repository": "https://github.com/CitiesSkylinesModding/UrbanDevKit",
+  "type": "module",
+  "packageManager": "bun@1.1.16",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cooperative-preloading": {
+      "default": "./dist/cooperative-preloading/index.js",
+      "types": "./dist/cooperative-preloading/index.d.ts"
+    }
+  },
+  "files": ["cs2-types", "dist"],
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "lefthook": "^1.6.18"
+  }
+}

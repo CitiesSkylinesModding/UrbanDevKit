@@ -1,8 +1,12 @@
 # Non-commitable editor files
 .vs
 
+# Dependencies directories
+/node_modules/
+
 # Build artifacts
+/.localnuget/
+dist/
 Library/
 bin/
 obj/
-/.localnuget

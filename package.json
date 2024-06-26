@@ -1,0 +1,41 @@
+{
+  "name": "@csmodding/urbandevkit-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.1.16",
+  "workspaces": ["JSDevKit", "TestModOne/UI", "TestModTwo/UI"],
+  "scripts": {
+    "pm:update": "bunx npm-check-updates -i",
+    "check:tsc:jsdevkit": "tsc --p JSDevKit/tsconfig.json --noEmit --emitDeclarationOnly false",
+    "check:tsc:testmodone": "tsc --p TestModOne/UI/tsconfig.json --noEmit",
+    "check:tsc:testmodtwo": "tsc --p TestModTwo/UI/tsconfig.json --noEmit",
+    "check:tsc": "bun --bun run-p 'check:tsc:*'",
+    "check:biome": "biome check --fix",
+    "check": "bun --bun run-s 'check:*'",
+    "build:jsdevkit": "bun check:tsc:jsdevkit && bun --bun tsup --config JSDevKit/tsup.config.ts",
+    "build:testmodone": "bun check:tsc:testmodone && webpack --config TestModOne/UI/webpack.config.js",
+    "build:testmodtwo": "bun check:tsc:testmodtwo && webpack --config TestModTwo/UI/webpack.config.js",
+    "build": "run-s 'build:*'"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.2",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "chalk": "^5.3.0",
+    "css-loader": "^7.1.2",
+    "mini-css-extract-plugin": "^2.9.0",
+    "npm-run-all": "^4.1.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sass": "^1.77.6",
+    "sass-loader": "^14.2.1",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "trustedDependencies": ["@biomejs/biome", "esbuild", "lefthook"]
+}

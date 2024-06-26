@@ -1,0 +1,8 @@
+{
+  "name": "@csmodding/test-mod-two",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@csmodding/urbandevkit": "workspace:*"
+  }
+}

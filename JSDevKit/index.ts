@@ -1,0 +1,1 @@
+﻿export { registerMod } from './common';

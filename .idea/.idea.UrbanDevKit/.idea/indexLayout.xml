@@ -2,7 +2,17 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders />
-    <explicitIncludes />
+    <explicitIncludes>
+      <Path>.gitattributes</Path>
+      <Path>.gitignore</Path>
+      <Path>JSDevKit</Path>
+      <Path>NuGet.config</Path>
+      <Path>biome.jsonc</Path>
+      <Path>lefthook.yml</Path>
+      <Path>package.json</Path>
+      <Path>tsconfig.json</Path>
+      <Path>tsup.config.ts</Path>
+    </explicitIncludes>
     <explicitExcludes />
   </component>
 </project>
