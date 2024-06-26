@@ -1,4 +1,4 @@
-﻿let mod: ModDefinition | undefined;
+let mod: ModDefinition | undefined;
 
 declare const UDK_VERSION: string;
 
