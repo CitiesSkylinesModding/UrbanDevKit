@@ -1,4 +1,4 @@
-﻿using Colossal.IO.AssetDatabase;
+using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
 using Game;
 using Game.Modding;
@@ -18,16 +18,19 @@ public sealed class Mod : IMod {
     public void OnLoad(UpdateSystem updateSystem) {
         Mod.Log.Info(nameof(Mod.OnLoad));
 
-        if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset)) {
+        if (GameManager.instance.modManager.TryGetExecutableAsset(
+                this, out var asset)) {
             Mod.Log.Info($"Current mod asset at {asset.path}");
         }
 
         this.setting = new Setting(this);
         this.setting.RegisterInOptionsUI();
 
-        GameManager.instance.localizationManager.AddSource("en-US", new LocaleEn(this.setting));
+        GameManager.instance.localizationManager.AddSource(
+            "en-US", new LocaleEn(this.setting));
 
-        AssetDatabase.global.LoadSettings(nameof(TestModTwo), this.setting, new Setting(this));
+        AssetDatabase.global.LoadSettings(
+            nameof(TestModTwo), this.setting, new Setting(this));
     }
 
     public void OnDispose() {

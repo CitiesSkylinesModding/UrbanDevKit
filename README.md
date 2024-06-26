@@ -64,7 +64,7 @@ Commits must follow the [Conventional Commits](https://www.conventionalcommits.o
 specifically the Angular one.
 
 Scope can be one or more of the following:
-- `ui`: for changes in UrbanDevKit's UI libraries;
-- `dotnet`: for changes in UrbanDevKit's .NET libraries;
+- `jsdk`: for changes in UrbanDevKit's UI libraries;
+- `netdk`: for changes in UrbanDevKit's .NET libraries;
 - `testmod`: for changes in the test mods (don't forget there is also the `test()` commit type);
 - Propose new scopes if needed!
