@@ -1,16 +1,11 @@
 ﻿using System.Reflection;
-using Colossal.Logging;
 using UnityEngine.Scripting;
+using UrbanDevKit.Internals;
 
 namespace UrbanDevKit;
 
 [Preserve]
 internal static class UrbanDevKit {
-    public static readonly ILog Log = LogManager
-        .GetLogger(nameof(UrbanDevKit))
-        .SetEffectiveness(Level.All)
-        .SetShowsErrorsInUI(true);
-
     [Preserve]
     static UrbanDevKit() {
         // Multiple UrbanDevKit assemblies can be loaded: they will have
@@ -19,7 +14,7 @@ internal static class UrbanDevKit {
         // We log the loaded assembly for debug and testing purposes, as this
         // static constructor will be called for each assembly, this is useful
         // to track which UDKs are loaded.
-        UrbanDevKit.Log.Info(
+        new UDKLogger(nameof(UrbanDevKit)).Info(
             $"Loaded assembly {Assembly.GetExecutingAssembly().FullName}");
     }
 }

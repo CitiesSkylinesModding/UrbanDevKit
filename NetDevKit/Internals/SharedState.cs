@@ -20,6 +20,13 @@ namespace UrbanDevKit.Internals;
 ///
 /// This also means the dynamic assembly and how the dictionary is used MUST NOT
 /// be subject to breaking changes unless absolutely necessary.
+///
+/// ** Implementation details: **
+/// When performing multiple operations on the shared state, it's recommended to
+/// `lock() {}` the operations on <see cref="State"/>.
+/// It was considered to use a ConcurrentDictionary, but as the API consumer
+/// can manipulate other complex structures inside the dictionary, it's better
+/// that they handle the synchronization themselves.
 /// </summary>
 internal static class SharedState {
     private const string SharedAssemblyName = "UrbanDevKitSharedState";
@@ -31,52 +38,28 @@ internal static class SharedState {
     /// <summary>
     /// Access to the shared state dictionary.
     /// </summary>
-    private static readonly Dictionary<string, object?> State =
+    internal static readonly Dictionary<string, object?> State =
         (SharedState.GetSharedStateClass()
             .GetField(
                 SharedState.SharedFieldName,
                 BindingFlags.Public | BindingFlags.Static)!
             .GetValue(null) as Dictionary<string, object?>)!;
 
-    /// <summary>Like the Dictionary method, but thread-safe.</summary>
-    public static bool ContainsKey(string key) {
-        lock (SharedState.State) {
-            return SharedState.State.ContainsKey(key);
-        }
-    }
-
-    /// <summary>Like the Dictionary method, but thread-safe.</summary>
-    public static bool TryGetValue<TValue>(string key, out TValue? value) {
-        lock (SharedState.State) {
-            if (SharedState.State.TryGetValue(key, out var obj) &&
-                obj is TValue objValue) {
-                value = objValue;
-
-                return true;
-            }
-
-            value = default;
-
-            return false;
-        }
-    }
-
     /// <summary>
-    /// Like <see cref="Dictionary{TKey,TValue}.this"/> accessor, but
-    /// thread-safe.
+    /// Get a typed value accessor for a key in the shared state dictionary.
     /// </summary>
-    public static void SetValue<TValue>(string key, TValue value) {
-        lock (SharedState.State) {
-            SharedState.State[key] = value;
-        }
+    internal static StateAccessor<TValue> GetValueAccessor<TValue>(
+        string key,
+        Func<TValue> initializer) {
+        return new StateAccessor<TValue>(key, initializer);
     }
+
+    private static readonly UDKLogger Log = new(nameof(SharedState));
 
     /// <summary>
     /// Gets the shared state class type and creates it if it doesn't exist.
     /// </summary>
     private static Type GetSharedStateClass() {
-        var udkVersion = Assembly.GetExecutingAssembly().GetName().Name;
-
         // Try to find the shared state assembly.
         var assembly = AppDomain.CurrentDomain.GetAssemblies()
             .FirstOrDefault(assembly =>
@@ -85,15 +68,15 @@ internal static class SharedState {
         // If it was already created by another UDK assembly, return the shared
         // state class type.
         if (assembly is not null) {
-            UrbanDevKit.Log.Debug(
-                $"[{udkVersion}] Assembly {SharedState.SharedAssemblyName} was already created.");
+            SharedState.Log.Verbose(
+                $"Assembly {SharedState.SharedAssemblyName} was already created.");
 
             return assembly.GetType(SharedState.SharedClassName);
         }
 
         // Otherwise, create the shared state assembly.
-        UrbanDevKit.Log.Debug(
-            $"[{udkVersion}] Creating {SharedState.SharedAssemblyName} assembly...");
+        SharedState.Log.Verbose(
+            $"Creating {SharedState.SharedAssemblyName} assembly...");
 
         return SharedState.CreateSharedStateClass();
     }
@@ -131,5 +114,30 @@ internal static class SharedState {
             .SetValue(null, new Dictionary<string, object>());
 
         return type;
+    }
+
+    /// <summary>
+    /// Helper class to initialize, read and write a state key.
+    /// <param name="key">A key of <see cref="SharedState.State"/></param>
+    /// <param name="initializer">
+    /// Function returning the value to initialize the key with, if it's missing
+    /// in the state.
+    /// </param>
+    /// </summary>
+    internal class StateAccessor<TValue>(string key, Func<TValue> initializer) {
+        internal bool HasValue => SharedState.State.ContainsKey(key);
+
+        internal TValue Value {
+            get {
+                if (SharedState.State.TryGetValue(key, out var value)) {
+                    return (TValue)value!;
+                }
+
+                SharedState.State[key] = value = initializer();
+
+                return (TValue)value!;
+            }
+            set => SharedState.State[key] = value;
+        }
     }
 }
