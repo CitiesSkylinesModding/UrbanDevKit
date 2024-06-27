@@ -1,4 +1,5 @@
-﻿using Colossal.Logging;
+﻿using System;
+using Colossal.Logging;
 
 namespace UrbanDevKit.Internals;
 
@@ -27,7 +28,11 @@ internal class UDKLogger(string scope) {
         UDKLogger.Log.Error(this.Format(message));
     }
 
+    internal void Error(Exception exception, string message) {
+        UDKLogger.Log.Error(exception, this.Format(message));
+    }
+
     private string Format(string message) {
-        return $"[{UDKLogger.AssemblyName}] [{scope}]: {message}";
+        return $"[{UDKLogger.AssemblyName}] [{scope}] {message}";
     }
 }

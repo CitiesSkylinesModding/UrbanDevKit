@@ -38,12 +38,31 @@ internal static class SharedState {
     /// <summary>
     /// Access to the shared state dictionary.
     /// </summary>
-    internal static readonly Dictionary<string, object?> State =
-        (SharedState.GetSharedStateClass()
-            .GetField(
-                SharedState.SharedFieldName,
-                BindingFlags.Public | BindingFlags.Static)!
-            .GetValue(null) as Dictionary<string, object?>)!;
+    internal static readonly Dictionary<string, object?> State;
+
+    private static readonly UDKLogger Log = new(nameof(SharedState));
+
+    static SharedState() {
+        try {
+            SharedState.State =
+                SharedState.GetSharedStateClass()
+                        .GetField(
+                            SharedState.SharedFieldName,
+                            BindingFlags.Public | BindingFlags.Static)
+                        ?.GetValue(null) as
+                    Dictionary<string, object?> ??
+                throw new NullReferenceException(
+                    "Unexpected null state dictionary.");
+        }
+        catch (Exception ex) {
+            SharedState.Log.Error(
+                ex,
+                "Failed to initialize shared state, using best-effort fallback. " +
+                "Communication between different UDK versions will not work.");
+
+            SharedState.State = new Dictionary<string, object?>();
+        }
+    }
 
     /// <summary>
     /// Get a typed value accessor for a key in the shared state dictionary.
@@ -53,8 +72,6 @@ internal static class SharedState {
         Func<TValue> initializer) {
         return new StateAccessor<TValue>(key, initializer);
     }
-
-    private static readonly UDKLogger Log = new(nameof(SharedState));
 
     /// <summary>
     /// Gets the shared state class type and creates it if it doesn't exist.
@@ -75,10 +92,12 @@ internal static class SharedState {
         }
 
         // Otherwise, create the shared state assembly.
-        SharedState.Log.Verbose(
-            $"Creating {SharedState.SharedAssemblyName} assembly...");
+        var type = SharedState.CreateSharedStateClass();
 
-        return SharedState.CreateSharedStateClass();
+        SharedState.Log.Verbose(
+            $"Created {SharedState.SharedAssemblyName} dynamic assembly.");
+
+        return type;
     }
 
     /// <summary>
