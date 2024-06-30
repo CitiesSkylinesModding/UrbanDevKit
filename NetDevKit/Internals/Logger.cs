@@ -3,6 +3,9 @@ using Colossal.Logging;
 
 namespace UrbanDevKit.Internals;
 
+/// <summary>
+/// A logger that prefixes messages with the UDK version and a feature scope.
+/// </summary>
 internal class UDKLogger(string scope) {
     private static readonly ILog Log = LogManager
         .GetLogger(nameof(UrbanDevKit))

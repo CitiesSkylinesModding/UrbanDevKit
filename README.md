@@ -109,5 +109,6 @@ specifically the Angular one.
 Scope can be one or more of the following:
 - `jsdk`: for changes in UrbanDevKit's UI libraries;
 - `netdk`: for changes in UrbanDevKit's .NET libraries;
+- `utils`: specific scope for changes in the libraries;
 - `testmod`: for changes in the test mods (don't forget there is also the `test()` commit type);
 - Propose new scopes if needed!

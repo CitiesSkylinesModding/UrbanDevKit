@@ -3,32 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using UrbanDevKit.Internals;
 
-namespace UrbanDevKit.Internals;
+namespace UrbanDevKit.Utils;
 
 /// <summary>
-/// This class is used to share state across multiple UrbanDevKit assemblies
-/// of a different major version.
+/// <para>
+/// This class is used to share state across different assemblies that don't
+/// know about each other but know about the SharedState API and what keys it
+/// may contain.
+/// This can be used by mods to share data without linking to each other.
+/// It is used internally by UDK to share state across different UDK versions.
+/// <br />
+/// In a normal time, with only one UDK assembly, we could store state in static
+/// classes, but with multiple UDK assemblies of different versions, the
+/// same-named static symbols will not resolve to the same types!
+/// </para>
 ///
-/// In a normal time, with only one assembly, we could store state in static
-/// classes, but with multiple assemblies, the same-named static symbols will
-/// not resolve to the same types!
+/// <para>
+/// By the way, this also means that it makes no sense to put objects that are
+/// specific to your assembly in the shared state, as the other assemblies
+/// won't know about them. Only put objects that are known to all assemblies,
+/// like .NET/Unity/Game types.
+/// </para>
 ///
+/// <para>
 /// This class uses reflection to create a dynamic assembly on the fly which
 /// contains a static field with a dictionary that allows sharing values
-/// across any assemblies in the current AppDomain.
-///
+/// across any assemblies in the current AppDomain.<br />
 /// This also means the dynamic assembly and how the dictionary is used MUST NOT
 /// be subject to breaking changes unless absolutely necessary.
+/// </para>
 ///
-/// ** Implementation details: **
-/// When performing multiple operations on the shared state, it's recommended to
-/// `lock() {}` the operations on <see cref="State"/>.
-/// It was considered to use a ConcurrentDictionary, but as the API consumer
-/// can manipulate other complex structures inside the dictionary, it's better
-/// that they handle the synchronization themselves.
+/// <para>
+/// When performing any operation (even read a single value) on the shared
+/// state, it's recommended to `lock() {}` the operations on <see cref="State"/>
+/// unless you absolutely know what you're doing.<br />
+/// It was considered to use a `ConcurrentDictionary`, but as the API consumer
+/// can manipulate other complex structures inside the dictionary or perform
+/// many operations in a row, it's better that they handle the synchronization
+/// themselves.
+/// </para>
 /// </summary>
-internal static class SharedState {
+public static class SharedState {
     private const string SharedAssemblyName = "UrbanDevKitSharedState";
 
     private const string SharedClassName = "SharedState";
@@ -38,10 +55,14 @@ internal static class SharedState {
     /// <summary>
     /// Access to the shared state dictionary.
     /// </summary>
-    internal static readonly Dictionary<string, object?> State;
+    public static readonly Dictionary<string, object?> State;
 
     private static readonly UDKLogger Log = new(nameof(SharedState));
 
+    /// <summary>
+    /// Initializes the shared state assembly, catching error and fallback to an
+    /// assembly-local state if that fails.
+    /// </summary>
     static SharedState() {
         try {
             SharedState.State =
@@ -66,11 +87,14 @@ internal static class SharedState {
 
     /// <summary>
     /// Get a typed value accessor for a key in the shared state dictionary.
+    /// If you typically need to `lock()` your operations on the shared state,
+    /// this is not needed for this method as it only creates a wrapper to the
+    /// value and does not read or write it immediately.
     /// </summary>
-    internal static StateAccessor<TValue> GetValueAccessor<TValue>(
+    public static StateValueAccessor<TValue> GetValueAccessor<TValue>(
         string key,
         Func<TValue> initializer) {
-        return new StateAccessor<TValue>(key, initializer);
+        return new StateValueAccessor<TValue>(key, initializer);
     }
 
     /// <summary>
@@ -137,16 +161,28 @@ internal static class SharedState {
 
     /// <summary>
     /// Helper class to initialize, read and write a state key.
+    /// Most of the time, you'll want to `lock(<see cref="SharedState.State"/>)`
+    /// your read and write operations.
+    ///
     /// <param name="key">A key of <see cref="SharedState.State"/></param>
     /// <param name="initializer">
     /// Function returning the value to initialize the key with, if it's missing
     /// in the state.
     /// </param>
     /// </summary>
-    internal class StateAccessor<TValue>(string key, Func<TValue> initializer) {
-        internal bool HasValue => SharedState.State.ContainsKey(key);
+    public class StateValueAccessor<TValue>(
+        string key,
+        Func<TValue> initializer) {
+        /// <summary>
+        /// Gets whether the key is initialized in the shared state, that is if
+        /// a mod already read or write <see cref="Value"/>.
+        /// </summary>
+        public bool IsInitialized => SharedState.State.ContainsKey(key);
 
-        internal TValue Value {
+        /// <summary>
+        /// Gets the value of the key in the shared state.
+        /// </summary>
+        public TValue Value {
             get {
                 if (SharedState.State.TryGetValue(key, out var value)) {
                     return (TValue)value!;
