@@ -92,9 +92,10 @@ public static class SharedState {
     /// value and does not read or write it immediately.
     /// </summary>
     public static StateValueAccessor<TValue> GetValueAccessor<TValue>(
+        string @namespace,
         string key,
         Func<TValue> initializer) {
-        return new StateValueAccessor<TValue>(key, initializer);
+        return new StateValueAccessor<TValue>(@namespace, key, initializer);
     }
 
     /// <summary>
@@ -171,28 +172,36 @@ public static class SharedState {
     /// </param>
     /// </summary>
     public class StateValueAccessor<TValue>(
+        string @namespace,
         string key,
         Func<TValue> initializer) {
+        private readonly string fullKey = $"{@namespace}::{key}";
+
         /// <summary>
         /// Gets whether the key is initialized in the shared state, that is if
         /// a mod already read or write <see cref="Value"/>.
         /// </summary>
-        public bool IsInitialized => SharedState.State.ContainsKey(key);
+        public bool IsInitialized =>
+            SharedState.State.ContainsKey(this.fullKey);
 
         /// <summary>
-        /// Gets the value of the key in the shared state.
+        /// Gets the value of the key in the shared state.<br />
+        /// If the key was not initialized yet, the initializer function is
+        /// run and the value set before it is returned, making the operation
+        /// non-atomic.
         /// </summary>
         public TValue Value {
             get {
-                if (SharedState.State.TryGetValue(key, out var value)) {
+                if (SharedState.State.TryGetValue(
+                        this.fullKey, out var value)) {
                     return (TValue)value!;
                 }
 
-                SharedState.State[key] = value = initializer();
+                SharedState.State[this.fullKey] = value = initializer();
 
                 return (TValue)value!;
             }
-            set => SharedState.State[key] = value;
+            set => SharedState.State[this.fullKey] = value;
         }
     }
 }
