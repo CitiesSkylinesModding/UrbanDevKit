@@ -11,7 +11,7 @@ namespace UrbanDevKit.Utils;
 /// <para>
 /// This class is used to share state across different assemblies that don't
 /// know about each other but know about the SharedState API and what keys it
-/// may contain.
+/// may contain.<br />
 /// This can be used by mods to share data without linking to each other.
 /// It is used internally by UDK to share state across different UDK versions.
 /// <br />
@@ -23,8 +23,9 @@ namespace UrbanDevKit.Utils;
 /// <para>
 /// By the way, this also means that it makes no sense to put objects that are
 /// specific to your assembly in the shared state, as the other assemblies
-/// won't know about them. Only put objects that are known to all assemblies,
-/// like .NET/Unity/Game types.
+/// won't know about them (they could only work with those values with
+/// reflection). So, only put objects that are known to all assemblies, like
+/// .NET/Unity/Game types.
 /// </para>
 ///
 /// <para>
@@ -45,7 +46,7 @@ namespace UrbanDevKit.Utils;
 /// themselves.
 /// </para>
 /// </summary>
-public static class SharedState {
+public static partial class SharedState {
     private const string SharedAssemblyName = "UrbanDevKitSharedState";
 
     private const string SharedClassName = "SharedState";
@@ -55,7 +56,7 @@ public static class SharedState {
     /// <summary>
     /// Access to the shared state dictionary.
     /// </summary>
-    public static readonly Dictionary<string, object?> State;
+    public static readonly IDictionary<string, object?> State;
 
     private static readonly UDKLogger Log = new(nameof(SharedState));
 
@@ -64,38 +65,47 @@ public static class SharedState {
     /// assembly-local state if that fails.
     /// </summary>
     static SharedState() {
-        try {
-            SharedState.State =
-                SharedState.GetSharedStateClass()
-                        .GetField(
-                            SharedState.SharedFieldName,
-                            BindingFlags.Public | BindingFlags.Static)
-                        ?.GetValue(null) as
-                    Dictionary<string, object?> ??
-                throw new NullReferenceException(
-                    "Unexpected null state dictionary.");
-        }
-        catch (Exception ex) {
-            SharedState.Log.Error(
-                ex,
-                "Failed to initialize shared state, using best-effort fallback. " +
-                "Communication between different UDK versions will not work.");
-
-            SharedState.State = new Dictionary<string, object?>();
-        }
+        SharedState.State =
+            SharedState.GetSharedStateClass()
+                    .GetField(
+                        SharedState.SharedFieldName,
+                        BindingFlags.Public | BindingFlags.Static)
+                    ?.GetValue(null) as
+                IDictionary<string, object?> ??
+            throw new NullReferenceException(
+                "Unexpected null shared state dictionary.");
     }
 
     /// <summary>
     /// Get a typed value accessor for a key in the shared state dictionary.
     /// If you typically need to `lock()` your operations on the shared state,
-    /// this is not needed for this method as it only creates a wrapper to the
-    /// value and does not read or write it immediately.
+    /// this is not needed for this method as it always locks the shared state
+    /// itself to register initializer functions.
     /// </summary>
+    /// <param name="namespace">
+    /// Namespace of the key, ex. `nameof(MyMod)`.
+    /// </param>
+    /// <param name="key">
+    /// Key name, ex. "MyKey".
+    /// </param>
+    /// <param name="initializer">
+    /// Initializer function for the value when it is first accessed.
+    /// As many assemblies can access the shared state, one of them will have to
+    /// initialize the value, so one of them gets to say how the value is first
+    /// initialized.<br />
+    /// To mitigate compatibility issues and race conditions, the initializer
+    /// is versioned with a PATCH version number (i.e. it MUST remain compatible
+    /// with other and older implementations).<br />
+    /// This give a better chance to the "best" initializer to be the one used.
+    /// In order to play nice with this system, delay resolving
+    /// <see cref="StateValueAccessor{TValue}.Value"/> until you really need it,
+    /// so other assemblies have a chance to propose their initializers.
+    /// </param>
     public static StateValueAccessor<TValue> GetValueAccessor<TValue>(
         string @namespace,
         string key,
-        Func<TValue> initializer) {
-        return new StateValueAccessor<TValue>(@namespace, key, initializer);
+        (ushort Version, Func<TValue> Function) initializer) {
+        return StateValueAccessor<TValue>.For(@namespace, key, initializer);
     }
 
     /// <summary>
@@ -145,7 +155,7 @@ public static class SharedState {
         // Step 3: Add the state field to the Type.
         typeBuilder.DefineField(
             SharedState.SharedFieldName,
-            typeof(Dictionary<string, object>),
+            typeof(IDictionary<string, object>),
             FieldAttributes.Public | FieldAttributes.Static);
 
         // Step 4: Create the Type.
@@ -158,50 +168,5 @@ public static class SharedState {
             .SetValue(null, new Dictionary<string, object>());
 
         return type;
-    }
-
-    /// <summary>
-    /// Helper class to initialize, read and write a state key.
-    /// Most of the time, you'll want to `lock(<see cref="SharedState.State"/>)`
-    /// your read and write operations.
-    ///
-    /// <param name="key">A key of <see cref="SharedState.State"/></param>
-    /// <param name="initializer">
-    /// Function returning the value to initialize the key with, if it's missing
-    /// in the state.
-    /// </param>
-    /// </summary>
-    public class StateValueAccessor<TValue>(
-        string @namespace,
-        string key,
-        Func<TValue> initializer) {
-        private readonly string fullKey = $"{@namespace}::{key}";
-
-        /// <summary>
-        /// Gets whether the key is initialized in the shared state, that is if
-        /// a mod already read or write <see cref="Value"/>.
-        /// </summary>
-        public bool IsInitialized =>
-            SharedState.State.ContainsKey(this.fullKey);
-
-        /// <summary>
-        /// Gets the value of the key in the shared state.<br />
-        /// If the key was not initialized yet, the initializer function is
-        /// run and the value set before it is returned, making the operation
-        /// non-atomic.
-        /// </summary>
-        public TValue Value {
-            get {
-                if (SharedState.State.TryGetValue(
-                        this.fullKey, out var value)) {
-                    return (TValue)value!;
-                }
-
-                SharedState.State[this.fullKey] = value = initializer();
-
-                return (TValue)value!;
-            }
-            set => SharedState.State[this.fullKey] = value;
-        }
     }
 }
