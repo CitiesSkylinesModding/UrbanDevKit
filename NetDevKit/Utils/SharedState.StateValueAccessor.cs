@@ -31,24 +31,9 @@ public static partial class SharedState {
         /// </summary>
         public TValue Value {
             get {
-                // Return the value if it's already in the shared state.
-                if (SharedState.State.TryGetValue(
-                        this.key, out var value)) {
-                    return (TValue)value!;
-                }
+                this.MaybeInitialize();
 
-                // Otherwise, initialize the value and return it.
-                var (version, function) =
-                    ((ushort, Func<TValue>))
-                    SharedState.State[this.initializerKey]!;
-
-                value = SharedState.State[this.key] = (TValue)function()!;
-
-                SharedState.Log.Verbose(
-                    $"Initialized state value \"{this.key}\" " +
-                    $"with initializer version {version}.");
-
-                return (TValue)value;
+                return (TValue)SharedState.State[this.key]!;
             }
             set => SharedState.State[this.key] = value;
         }
@@ -107,6 +92,33 @@ public static partial class SharedState {
         internal StateValueAccessor(string @namespace, string key) {
             this.key = $"{@namespace}::{key}";
             this.initializerKey = $"{this.key}__Initializer";
+        }
+
+        /// <summary>
+        /// Initializes the shared value with the initializer function.
+        /// Similar to accessing <see cref="StateValueAccessor{TValue}.Value"/>,
+        /// but for cases where property access is not desired.
+        /// </summary>
+        /// <returns>False if the property was already initialized.</returns>
+        public bool MaybeInitialize() {
+            if (this.IsInitialized) {
+                return false;
+            }
+
+            // Otherwise, initialize the value and return it.
+            var (version, function) =
+                ((ushort, Func<TValue>))
+                SharedState.State[this.initializerKey]!;
+
+            var value = (TValue)function()!;
+
+            SharedState.State[this.key] = value;
+
+            SharedState.Log.Verbose(
+                $"Initialized state value \"{this.key}\" " +
+                $"with initializer version {version}.");
+
+            return true;
         }
 
         /// <summary>
