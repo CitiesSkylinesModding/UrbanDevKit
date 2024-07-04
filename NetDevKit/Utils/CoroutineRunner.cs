@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Threading;
-using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UrbanDevKit.Utils;
@@ -34,17 +34,18 @@ public static class CoroutineRunner {
         CoroutineRunner.CoroutineHolder.StopCoroutine(coroutine);
 
     /// <summary>
-    /// Wraps a coroutine in a <see cref="Task"/>.
+    /// Wraps a coroutine in a <see cref="Task"/> and runs it immediately.
     /// The task will complete with the last value the coroutine yielded.
     /// The task will throw if the coroutine throws an exception.
     /// The task can be cancelled and the coroutine will be stopped.
     /// </summary>
-    public static Task AsTask(
+    public static Task RunAsTask(
         this IEnumerator coroutine,
         CancellationToken cancellationToken = default) {
+
         var tcs = new TaskCompletionSource<object?>();
 
-        CoroutineRunner.CoroutineHolder.StartCoroutine(RunCoroutine());
+        CoroutineRunner.Start(RunCoroutine());
 
         return tcs.Task;
 
