@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Colossal.Logging;
 
 namespace UrbanDevKit.Internals;
@@ -7,10 +8,12 @@ namespace UrbanDevKit.Internals;
 /// A logger that prefixes messages with the UDK version and a feature scope.
 /// </summary>
 internal class UDKLogger(string scope) {
+    private const bool ShowsErrorsInUI = true;
+
     private static readonly ILog Log = LogManager
         .GetLogger(nameof(UrbanDevKit))
         .SetEffectiveness(Level.All)
-        .SetShowsErrorsInUI(true);
+        .SetShowsErrorsInUI(UDKLogger.ShowsErrorsInUI);
 
     private static readonly string AssemblyName =
         typeof(UDKLogger).Assembly.GetName().Name;
@@ -27,14 +30,19 @@ internal class UDKLogger(string scope) {
         UDKLogger.Log.Warn(this.Format(message));
     }
 
-    internal void Error(string message) {
+    internal void Error(string message, bool inUI = true) {
+        UDKLogger.Log.showsErrorsInUI = inUI;
         UDKLogger.Log.Error(this.Format(message));
+        UDKLogger.Log.showsErrorsInUI = UDKLogger.ShowsErrorsInUI;
     }
 
-    internal void Error(Exception exception, string message) {
+    internal void Error(Exception exception, string message, bool inUI = true) {
+        UDKLogger.Log.showsErrorsInUI = inUI;
         UDKLogger.Log.Error(exception, this.Format(message));
+        UDKLogger.Log.showsErrorsInUI = UDKLogger.ShowsErrorsInUI;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private string Format(string message) {
         return $"[{UDKLogger.AssemblyName}] [{scope}] {message}";
     }
