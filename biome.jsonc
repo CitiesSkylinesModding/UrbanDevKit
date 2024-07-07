@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
     "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.json"],
-    "ignore": ["**/bin", "**/obj", "**/dist", "**/cs2-types"]
+    "ignore": ["**/bin", "**/obj", "**/dist", "**/cs2-types", "*.personal.*"]
   },
   "organizeImports": {
     "enabled": true

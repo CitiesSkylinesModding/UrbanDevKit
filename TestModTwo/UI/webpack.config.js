@@ -67,7 +67,10 @@ export default {
         ]
     },
     resolve: {
-        extensions: ['.ts', '.tsx']
+        extensions: ['.ts', '.tsx'],
+        alias: {
+            'mod.json': path.resolve(import.meta.dirname, 'mod.json')
+        }
     },
     output: {
         path: path.resolve(import.meta.dirname, outputDir),

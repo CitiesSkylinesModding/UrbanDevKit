@@ -1,11 +1,13 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["**/*"],
+  "include": ["src/**/*", "cs2-types"],
+  "exclude": [],
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "declaration": true,
-    "emitDeclarationOnly": true,
     "sourceMap": true,
     "lib": ["ES2022", "DOM"],
     "target": "ES2022",

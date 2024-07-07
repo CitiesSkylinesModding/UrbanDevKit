@@ -6,7 +6,8 @@
 
 # Build artifacts
 /.localnuget/
-dist/
 Library/
 bin/
 obj/
+/JSDevKit/dist
+/JSDevKit/csmodding-urbandevkit-*.tgz
