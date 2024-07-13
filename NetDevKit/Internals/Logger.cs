@@ -31,15 +31,19 @@ internal class UDKLogger(string scope) {
     }
 
     internal void Error(string message, bool inUI = true) {
-        UDKLogger.Log.showsErrorsInUI = inUI;
-        UDKLogger.Log.Error(this.Format(message));
-        UDKLogger.Log.showsErrorsInUI = UDKLogger.ShowsErrorsInUI;
+        lock (UDKLogger.Log) {
+            UDKLogger.Log.showsErrorsInUI = inUI;
+            UDKLogger.Log.Error(this.Format(message));
+            UDKLogger.Log.showsErrorsInUI = UDKLogger.ShowsErrorsInUI;
+        }
     }
 
     internal void Error(Exception exception, string message, bool inUI = true) {
-        UDKLogger.Log.showsErrorsInUI = inUI;
-        UDKLogger.Log.Error(exception, this.Format(message));
-        UDKLogger.Log.showsErrorsInUI = UDKLogger.ShowsErrorsInUI;
+        lock (UDKLogger.Log) {
+            UDKLogger.Log.showsErrorsInUI = inUI;
+            UDKLogger.Log.Error(exception, this.Format(message));
+            UDKLogger.Log.showsErrorsInUI = UDKLogger.ShowsErrorsInUI;
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

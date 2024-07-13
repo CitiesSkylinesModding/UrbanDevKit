@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <LangVersion>latest</LangVersion>
@@ -24,7 +24,7 @@
         <Company>Cities: Skylines Modding Community</Company>
         <Description>A set of high-quality .NET utilities to ease development of Cities: Skylines II mods.</Description>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <PackageProjectUrl>https://discord.gg/tFE2kKHbFz</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/CitiesSkylinesModding/UrbanDevKit</PackageProjectUrl>
         <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/CitiesSkylinesModding/UrbanDevKit</RepositoryUrl>
@@ -34,13 +34,22 @@
     <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props"/>
 
     <ItemGroup>
+        <Reference Include="cohtml.Net">
+            <Private>false</Private>
+        </Reference>
         <Reference Include="Game">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Colossal.AssetPipeline">
             <Private>false</Private>
         </Reference>
         <Reference Include="Colossal.Core">
             <Private>false</Private>
         </Reference>
         <Reference Include="Colossal.Logging">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Colossal.PSI.Common">
             <Private>false</Private>
         </Reference>
         <Reference Include="Colossal.IO.AssetDatabase">
