@@ -20,7 +20,9 @@
     "build:jsdevkit:pack": "npm pack -w JSDevKit --pack-destination JSDevKit",
     "build:testmodone": "webpack --config TestModOne/UI/webpack.config.js",
     "build:testmodtwo": "webpack --config TestModTwo/UI/webpack.config.js",
-    "build": "run-s 'build:*'"
+    "build": "run-s 'build:*'",
+    "publish:npm": "npm publish -w JSDevKit",
+    "publish:nuget": "dotnet nuget push"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
