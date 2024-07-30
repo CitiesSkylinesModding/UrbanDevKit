@@ -14,7 +14,7 @@
         library, without causing conflicts.
         -->
         <AssemblyName>UrbanDevKitV1</AssemblyName>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <!-- NuGet package properties -->
@@ -107,6 +107,7 @@
     It will put the package in .localnuget which is configured as a source in NuGet.config.
     -->
     <Target Name="CopyPackage" AfterTargets="Pack">
+        <RemoveDir Directories="$(SolutionDir)\.localnuget\$(PackageId)\$(PackageVersion)"/>
         <Exec Command="nuget add &quot;$(ProjectDir)$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg&quot; -Source &quot;$(SolutionDir)/.localnuget&quot;"/>
     </Target>
 </Project>
