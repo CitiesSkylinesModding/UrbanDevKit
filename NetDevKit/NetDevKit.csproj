@@ -14,7 +14,7 @@
         library, without causing conflicts.
         -->
         <AssemblyName>UrbanDevKitV1</AssemblyName>
-        <Version>0.1.1</Version>
+        <Version>0.1.2</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <!-- NuGet package properties -->
