@@ -11,7 +11,7 @@
         library, without causing conflicts.
         -->
         <AssemblyName>UrbanDevKitV1</AssemblyName>
-        <Version>0.1.2</Version>
+        <Version>0.2.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <!-- NuGet package properties -->
@@ -105,7 +105,7 @@
     </ItemGroup>
 
     <!--
-    If you wish to test deploying and installing the NuGet package locally, uncomment this temporarily.
+    Useful to test deploying and installing the NuGet package locally.
     It will put the package in .localnuget which is configured as a source in NuGet.config.
     -->
     <Target Name="CopyPackage" AfterTargets="Pack">
