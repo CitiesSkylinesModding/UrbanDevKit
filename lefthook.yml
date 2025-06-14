@@ -1,5 +1,9 @@
 pre-commit:
+  parallel: true
   commands:
-    check:
-      glob: "*.{ts,tsx,json}"
-      run: bun check:tsc && bun biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    tsc:
+      glob: "*.{ts,tsx,js,json}"
+      run: bun check:tsc
+    biome:
+      glob: "*.{ts,tsx,js,json}"
+      run: bun biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}

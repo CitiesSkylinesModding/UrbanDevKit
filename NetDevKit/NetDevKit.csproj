@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <LangVersion>latest</LangVersion>
-        <TargetFramework>net472</TargetFramework>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
         <RootNamespace>UrbanDevKit</RootNamespace>
@@ -32,6 +29,11 @@
 
     <!--Imports must be after PropertyGroup block-->
     <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props"/>
+
+    <!-- Mod.props import overrides -->
+    <PropertyGroup>
+        <LangVersion>12</LangVersion>
+    </PropertyGroup>
 
     <ItemGroup>
         <Reference Include="cohtml.Net">

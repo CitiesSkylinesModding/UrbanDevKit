@@ -11,3 +11,4 @@ bin/
 obj/
 /JSDevKit/dist
 /JSDevKit/csmodding-urbandevkit-*.tgz
+*.tsbuildinfo

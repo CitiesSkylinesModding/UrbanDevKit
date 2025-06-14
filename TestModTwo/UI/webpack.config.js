@@ -5,6 +5,7 @@ import mod from './mod.json' with { type: 'json' };
 const userDataPath = process.env.CSII_USERDATAPATH;
 
 if (!userDataPath) {
+    // biome-ignore lint/style/useThrowOnlyError: normal webpack config pattern
     throw 'CSII_USERDATAPATH environment variable is not set, ensure the CSII Modding Toolchain is installed correctly';
 }
 

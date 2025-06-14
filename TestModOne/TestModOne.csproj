@@ -1,8 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <LangVersion>latest</LangVersion>
-        <TargetFramework>net472</TargetFramework>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
@@ -10,6 +7,15 @@
     <!--Imports must be after PropertyGroup block-->
     <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props"/>
     <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets"/>
+
+    <!-- Mod.props import overrides -->
+    <PropertyGroup>
+        <LangVersion>12</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>TRACE;UNITY_ASSERTIONS</DefineConstants>
+    </PropertyGroup>
 
     <ItemGroup>
         <Reference Include="Game">

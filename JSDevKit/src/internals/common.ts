@@ -1,5 +1,5 @@
 import modJson from 'mod.json';
-import packageJson from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 
 export const currentMod = modJson;
 

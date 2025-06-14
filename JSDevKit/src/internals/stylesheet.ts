@@ -1,4 +1,4 @@
-import packageJson from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 
 /**
  * Add a stylesheet to the document by creating a new <style> element with the

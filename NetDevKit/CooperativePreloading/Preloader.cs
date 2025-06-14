@@ -414,7 +414,7 @@ public static class Preloader {
 
             Preloader.Log.Info(
                 $"Prevented auto load of save \"{saveGame.name}\" " +
-                $"(guid={saveGame.guid}) because some mods are preloading.");
+                $"(guid={saveGame.id}) because some mods are preloading.");
 
             return saveGame;
         }
