@@ -15,10 +15,6 @@
     ".": {
       "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./cooperative-preloading": {
-      "default": "./dist/cooperative-preloading/index.js",
-      "types": "./dist/cooperative-preloading/index.d.ts"
     }
   },
   "peerDependencies": {

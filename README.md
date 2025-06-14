@@ -69,8 +69,9 @@ Here is however a quick overview of features provided by UrbanDevKit:
 
 ### .NET+UI Features
 
-- **[Cooperative Preloading](https://github.com/CitiesSkylinesModding/UrbanDevKit/wiki/Cooperative-Preloading)**
-  Prevent the user to load a game while mods are preloading
+- ~~**Cooperative Preloading**~~
+  ~~Prevent the user to load a game while mods are preloading~~
+  (Removed)
 
 ## Installation
 
