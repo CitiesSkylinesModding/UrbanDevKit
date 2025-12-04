@@ -1,3 +1,9 @@
+# v0.2.1
+
+## UI SDK
+
+- Updated the game’s reference `.d.ts` files.
+
 # v0.2.0
 
 ## .NET SDK
@@ -8,7 +14,7 @@
 
 ## UI SDK
 
-- Updated the game's reference `.d.ts` files.
+- Updated the game’s reference `.d.ts` files.
 
 # v0.1.2
 
